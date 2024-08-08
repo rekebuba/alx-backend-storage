@@ -1,7 +1,12 @@
--- Active: 1716468751032@@127.0.0.1@3306@holberton
+-- SQL script that creates a stored procedure ComputeAverageScoreForUser,
+-- that computes and store the average score for a student.
+-- Note: An average score can be a decimal
+
+-- drop if exists
 
 DROP PROCEDURE IF EXISTS ComputeAverageScoreForUser;
 
+-- change delimiter temporarily
 DELIMITER //
 
 CREATE PROCEDURE ComputeAverageScoreForUser(IN user_id INT)
@@ -13,8 +18,5 @@ BEGIN
     WHERE id = user_id;
 END //
 
+-- change back to default
 DELIMITER;
-
-CALL ComputeAverageScoreForUser(2)
-
-SELECT * FROM corrections;
