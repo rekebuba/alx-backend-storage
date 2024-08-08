@@ -1,6 +1,10 @@
--- Active: 1716468751032@@127.0.0.1@3306@holberton
+-- SQL script that creates a stored procedure ComputeAverageWeightedScoreForUsers,
+-- that computes and store the average weighted score for all students.
 
-DROP PROCEDURE ComputeAverageWeightedScoreForUsers;
+-- drop if exists
+DROP PROCEDURE IF EXISTS ComputeAverageWeightedScoreForUsers;
+
+-- change delimiter temporarily
 DELIMITER //
 
 CREATE PROCEDURE ComputeAverageWeightedScoreForUsers ()
@@ -12,6 +16,7 @@ BEGIN
     -- Declare a cursor to iterate over all users
     DECLARE user_cursor CURSOR FOR SELECT id FROM users;
 
+    -- Declare a handler to exit the loop when there are no more rows
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
 
     -- open the cursor
@@ -25,11 +30,13 @@ BEGIN
             LEAVE user_loop;
         END IF;
 
+        -- get and seat the score by joining correction and projects table
         SELECT IFNULL(SUM(score * weight) / SUM(weight), 0) INTO weighted_score
         FROM corrections
         INNER JOIN projects ON corrections.project_id = projects.id
         WHERE corrections.user_id = user_id;
 
+        -- update average_score column
         UPDATE users
         SET average_score = weighted_score
         WHERE id = user_id;
@@ -39,5 +46,5 @@ BEGIN
     CLOSE user_cursor;
 END //
 
-DELIMITER;
-
+-- change back to default
+DELIMITER ;
