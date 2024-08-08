@@ -2,7 +2,7 @@
 -- the first by the second number or returns 0 if the second number is equal to 0.
 
 -- drop if exists
-DROP FUNCTION IF exists SafeDiv;
+DROP FUNCTION IF EXISTS SafeDiv;
 
 -- change delimiter temporarily
 DELIMITER //
