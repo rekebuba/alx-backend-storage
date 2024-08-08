@@ -1,6 +1,10 @@
--- Active: 1716468751032@@127.0.0.1@3306@holberton
+-- SQL script that creates a trigger that decreases
+-- the quantity of an item after adding a new order.
 
+-- drop if exists
 DROP TRIGGER IF EXISTS monitor_order;
+
+-- create trigger
 CREATE TRIGGER monitor_order
 AFTER INSERT ON orders
 FOR EACH ROW
