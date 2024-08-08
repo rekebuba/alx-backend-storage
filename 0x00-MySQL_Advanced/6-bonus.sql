@@ -1,9 +1,14 @@
--- Active: 1716468751032@@127.0.0.1@3306@holberton
+-- SQL script that creates a stored procedure AddBonus
+-- that adds a new correction for a student.
+
+-- drop if exists
 
 DROP PROCEDURE IF EXISTS AddBonus;
 
-DELIMITER //
+-- change delimiter temporarily
 
+DELIMITER //
+-- create stored procedure AddBonus
 CREATE PROCEDURE AddBonus(IN user_id INT, IN project_name VARCHAR(255), IN score INT)
 BEGIN
     SET @project_id = NULL;
@@ -20,4 +25,5 @@ BEGIN
     INSERT INTO corrections VALUES(user_id, @project_id, score);
 END //
 
+-- change back to default
 DELIMITER ;
