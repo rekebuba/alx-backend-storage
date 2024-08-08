@@ -1,0 +1,8 @@
+-- Active: 1716468751032@@127.0.0.1@3306@holberton
+CREATE TABLE IF NOT EXISTS users (
+    id INT NOT NULL AUTO_INCREMENT,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    name VARCHAR(255),
+    country ENUM('US', 'CO', 'TN') NOT NULL DEFAULT 'US',
+    PRIMARY KEY (id)
+);
