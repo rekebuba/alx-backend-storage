@@ -1,6 +1,9 @@
--- Active: 1716468751032@@127.0.0.1@3306@holberton
+-- SQL script that creates an index idx_name_first,
+-- on the table names and the first letter of name.
+
+-- drop if exists
 ALTER TABLE names
 DROP INDEX idx_name_first;
 
+-- create index on the first name
 CREATE INDEX idx_name_first ON names((LEFT(name, 1)));
-
