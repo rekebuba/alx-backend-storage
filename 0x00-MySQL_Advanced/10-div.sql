@@ -2,7 +2,7 @@
 -- the first by the second number or returns 0 if the second number is equal to 0.
 
 -- drop if exists
-DROP FUNCTION `SafeDiv`;
+DROP FUNCTION IF exists SafeDiv;
 
 -- change delimiter temporarily
 DELIMITER //
@@ -10,11 +10,9 @@ DELIMITER //
 CREATE FUNCTION SafeDiv(a INT, b INT) RETURNS FLOAT
 DETERMINISTIC -- the output will always be the same given the same input
 BEGIN
-    DECLARE result FLOAT;
+    DECLARE result FLOAT DEFAULT 0;
 
-    IF b = 0 THEN
-        SET result = 0.0;
-    ELSE
+    IF b != 0 THEN
         SET result = a / b;
     END IF;
 
