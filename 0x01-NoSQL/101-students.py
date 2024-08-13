@@ -10,12 +10,23 @@ def top_students(mongo_collection):
     Args:
         mongo_collection: pymongo collection object
     """
-    students = list_all(mongo_collection)
-
-    for student in students:
-        scores = [topic.get('score') for topic in student.get('topics')]
-        averageScore = sum(scores) / len(scores)
-        mongo_collection.update_one({'_id': student.get('_id')}, {
-                                    '$set': {'averageScore': averageScore}})
-
-    return [x for x in mongo_collection.find().sort({'averageScore': -1})]
+    students = mongo_collection.aggregate(
+        [
+            {
+                '$project': {
+                    '_id': 1,
+                    'name': 1,
+                    'averageScore': {
+                        '$avg': {
+                            '$avg': '$topics.score',
+                        },
+                    },
+                    'topics': 1,
+                },
+            },
+            {
+                '$sort': {'averageScore': -1},
+            },
+        ]
+    )
+    return students
