@@ -6,6 +6,21 @@ from typing import Callable, Optional
 from functools import wraps
 
 
+def replay(method):
+    key = method.__qualname__
+
+    cache = Cache()
+
+    count = cache.get(key)
+    print(f"{key} was called {count} times:")
+
+    list_inputs = cache._redis.lrange(f"{key}:inputs", 0, -1)
+    list_outputs = cache._redis.lrange(f"{key}:outputs", 0, -1)
+
+    for inputs, outputs in zip(list_inputs, list_outputs):
+        print(f"{key}(*{inputs}) -> {outputs}")
+
+
 def call_history(method: Callable) -> Callable:
     """"Define the call_history decorator"""
     @wraps(method)
@@ -96,3 +111,4 @@ class Cache:
         Retrieve the data as an integer
         """
         return self.get(key, fn=int)
+
