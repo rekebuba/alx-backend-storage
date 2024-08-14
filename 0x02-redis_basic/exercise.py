@@ -2,8 +2,27 @@
 """Using Redis with python"""
 import redis
 import uuid
-from typing import Callable, Optional, Union
+from typing import Callable, Optional
 from functools import wraps
+
+
+def call_history(method: Callable) -> Callable:
+    """"Define the call_history decorator"""
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        """store the history of inputs and outputs for a particular function"""
+        key = method.__qualname__
+
+        input_key = f'{key}:inputs'
+        output_key = f'{key}:outputs'
+
+        self._redis.rpush(input_key, str(args))
+        output = method(self, *args, **kwargs)
+        self._redis.rpush(output_key, str(output))
+
+        return output
+
+    return wrapper
 
 
 def count_calls(method: Callable) -> Callable:
@@ -34,6 +53,7 @@ class Cache:
         self._redis.flushdb()
 
     @count_calls
+    @call_history
     def store(self, data) -> str:
         """generate a random key and store the input data in Redis
 
