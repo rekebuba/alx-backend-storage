@@ -2,7 +2,7 @@
 """Using Redis with python"""
 import redis
 import uuid
-from typing import Callable, Optional
+from typing import Callable, Optional, Union
 from functools import wraps
 
 
@@ -69,12 +69,12 @@ class Cache:
         """
         Create a Redis client instance and store it as a private variable
         """
-        self._redis = redis.Redis(host='localhost', port=6379, db=0)
+        self._redis = redis.Redis()
         self._redis.flushdb()
 
     @count_calls
     @call_history
-    def store(self, data) -> str:
+    def store(self, data: Union[str, bytes, int, float]) -> str:
         """generate a random key and store the input data in Redis
 
         Args:
