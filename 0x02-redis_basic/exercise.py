@@ -6,7 +6,12 @@ from typing import Callable, Optional
 from functools import wraps
 
 
-def replay(method):
+def replay(method: Callable):
+    """display the history of calls of a particular function
+
+    Args:
+        method (_type_): callable
+    """
     key = method.__qualname__
 
     cache = Cache()
@@ -111,4 +116,3 @@ class Cache:
         Retrieve the data as an integer
         """
         return self.get(key, fn=int)
-
