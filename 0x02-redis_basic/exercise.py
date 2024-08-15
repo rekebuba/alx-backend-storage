@@ -6,32 +6,28 @@ from typing import Callable, Optional, Union
 from functools import wraps
 
 
-def replay(method: Callable) -> None:
-    """display the history of calls of a particular function
-
-    Args:
-        method (_type_): callable
-    """
-    if method is None or not hasattr(method, '__self__'):
+def replay(fn: Callable) -> None:
+    '''Displays the call history of a Cache class' method.
+    '''
+    if fn is None or not hasattr(fn, '__self__'):
         return
-
-    _redis = getattr(method.__self__, '_redis', None)
-
-    if not isinstance(_redis, redis.Redis):
+    redis_store = getattr(fn.__self__, '_redis', None)
+    if not isinstance(redis_store, redis.Redis):
         return
-    key = method.__qualname__
-
-    count = int(_redis.get(key))
-    print("{} was called {} times:".format(key, count))
-
-    list_inputs = _redis.lrange(f"{key}:inputs", 0, -1)
-    list_outputs = _redis.lrange(f"{key}:outputs", 0, -1)
-
-    for inputs, outputs in zip(list_inputs, list_outputs):
+    fxn_name = fn.__qualname__
+    in_key = '{}:inputs'.format(fxn_name)
+    out_key = '{}:outputs'.format(fxn_name)
+    fxn_call_count = 0
+    if redis_store.exists(fxn_name) != 0:
+        fxn_call_count = int(redis_store.get(fxn_name))
+    print('{} was called {} times:'.format(fxn_name, fxn_call_count))
+    fxn_inputs = redis_store.lrange(in_key, 0, -1)
+    fxn_outputs = redis_store.lrange(out_key, 0, -1)
+    for fxn_input, fxn_output in zip(fxn_inputs, fxn_outputs):
         print('{}(*{}) -> {}'.format(
-            key,
-            inputs.decode("utf-8"),
-            outputs.decode("utf-8")
+            fxn_name,
+            fxn_input.decode("utf-8"),
+            fxn_output,
         ))
 
 
