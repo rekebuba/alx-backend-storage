@@ -22,13 +22,17 @@ def replay(method: Callable) -> None:
     key = method.__qualname__
 
     count = int(_redis.get(key))
-    print(f"{key} was called {count} times:")
+    print("{} was called {} times:".format(key, count))
 
     list_inputs = _redis.lrange(f"{key}:inputs", 0, -1)
     list_outputs = _redis.lrange(f"{key}:outputs", 0, -1)
 
     for inputs, outputs in zip(list_inputs, list_outputs):
-        print(f'{key}(*{inputs.decode("utf-8")}) -> {outputs.decode("utf-8")}')
+        print('{}(*{}) -> {}'.format(
+            key,
+            inputs.decode("utf-8"),
+            outputs.decode("utf-8")
+        ))
 
 
 def call_history(method: Callable) -> Callable:
