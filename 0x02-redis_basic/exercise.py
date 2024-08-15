@@ -6,24 +6,29 @@ from typing import Callable, Optional, Union
 from functools import wraps
 
 
-def replay(method: Callable):
+def replay(method: Callable) -> None:
     """display the history of calls of a particular function
 
     Args:
         method (_type_): callable
     """
+    if method is None or not hasattr(method, '__self__'):
+        return
+
+    _redis = getattr(method.__self__, '_redis', None)
+
+    if not isinstance(_redis, redis.Redis):
+        return
     key = method.__qualname__
 
-    cache = Cache()
-
-    count = cache.get(key)
+    count = int(_redis.get(key))
     print(f"{key} was called {count} times:")
 
-    list_inputs = cache._redis.lrange(f"{key}:inputs", 0, -1)
-    list_outputs = cache._redis.lrange(f"{key}:outputs", 0, -1)
+    list_inputs = _redis.lrange(f"{key}:inputs", 0, -1)
+    list_outputs = _redis.lrange(f"{key}:outputs", 0, -1)
 
     for inputs, outputs in zip(list_inputs, list_outputs):
-        print(f"{key}(*{inputs}) -> {outputs}")
+        print(f'{key}(*{inputs.decode("utf-8")}) -> {outputs.decode("utf-8")}')
 
 
 def call_history(method: Callable) -> Callable:
